@@ -1,0 +1,8 @@
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# OS / editors
+.DS_Store
+.vscode/
+*.swp
