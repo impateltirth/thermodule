@@ -1,64 +1,71 @@
 # Thermodule
 
-Thermal management system on ESP32: temperature sensing, automatic PWM fan control across configurable temperature ranges, and real-time monitoring on an I2C LCD.
+Thermal management system on ESP32: NTC thermistor temperature sensing, automatic PWM fan control with hysteresis across configurable temperature ranges, and real-time monitoring on an I2C LCD.
 
-**Stack:** ESP32 · C++ · PWM · I2C · PlatformIO (Arduino framework)
+**Hardware:** ESP32 DevKit · 10k NTC thermistor · MOSFET-driven fan · 16x2 I2C LCD (PCF8574)
+**Firmware:** C++ on PlatformIO (Arduino framework)
 
-## Features
+## Control law
 
-- Temperature sensing with configurable thresholds
-- Automatic fan speed regulation via PWM (LEDC) across temperature ranges
-- Real-time I2C LCD dashboard: temperature, fan duty %, status
-- Hysteresis to avoid fan speed oscillation at threshold boundaries
-- Serial telemetry for logging/plotting
+Every 500 ms the firmware reads temperature and updates the fan:
 
-## Repository layout
+| Temperature | Fan |
+|---|---|
+| ≤ setpoint − hysteresis (43 °C) | Off |
+| Setpoint ± hysteresis band | Holds last duty (no chattering) |
+| > setpoint + hysteresis | Ramps linearly to 100% at setpoint + 15 °C |
+| ≥ 80 °C (max) | Full speed + `!! OVERHEAT !!` LCD alarm |
 
-```
-thermodule/
-├── platformio.ini   # ESP32 dev board, Arduino framework
-├── src/
-│   └── main.cpp     # Sensor read → control logic → PWM + LCD + serial
-└── docs/            # TODO: add wiring photo / enclosure shots
-```
+Duty changes are slew-rate limited so the fan never jumps abruptly. PWM runs at 25 kHz (above audible range) via the ESP32 LEDC peripheral.
 
-## Getting started
+## Pin map (ESP32 DevKit)
 
-1. Install [PlatformIO](https://platformio.org/) (VS Code extension recommended).
-2. Connect your ESP32 board.
-3. `pio run -t upload && pio device monitor`
-
-## Configuration
-
-All tuning lives at the top of `src/main.cpp`:
-
-```cpp
-constexpr float TEMP_FAN_MIN_C = 30.0f;  // fan starts ramping here
-constexpr float TEMP_FAN_MAX_C = 60.0f;  // fan hits 100% here
-constexpr float TEMP_HYSTERESIS_C = 2.0f;
-```
-
-Pin map (change to match your wiring):
-
-| Function | Default pin | Notes |
+| Function | Pin | Notes |
 |---|---|---|
-| Fan PWM | GPIO 25 | LEDC channel 0, 25 kHz |
-| Temp sensor | GPIO 34 (ADC) | TODO: set for your sensor |
-| I2C SDA / SCL | GPIO 21 / 22 | LCD at 0x27, 16×2 |
+| Thermistor ADC | GPIO34 | 10k NTC + 10k series, Steinhart-Hart conversion |
+| Fan PWM | GPIO25 | LEDC → MOSFET gate, low-side fan drive |
+| Fan tach | GPIO33 | Reserved — tachometer input (TODO) |
+| I2C SDA / SCL | GPIO21 / GPIO22 | 16x2 LCD backpack (default addr `0x27`) |
 
-## Temperature sensor
+All tunables (pins, setpoint, hysteresis, PWM params, thermistor constants) live in `include/config.h`. **Verify the pin map against your hardware before flashing** — especially the thermistor divider topology, which is documented in `config.h`.
 
-`read_temperature_c()` is stubbed — drop in your sensor:
-- **NTC thermistor** via ADC + Steinhart–Hart (recommended, matches the analog theme)
-- **DS18B20** via OneWire/DallasTemperature
-- **DHT22 / SHT31** if you already have one on hand
+## Firmware layout
 
-## TODO
+```
+├── platformio.ini      # esp32dev, Arduino framework, LCD library
+├── include/
+│   └── config.h        # ALL tunables: pins, control law, thermistor
+└── src/
+    ├── main.cpp        # setup + 500 ms control loop
+    ├── temp_sensor.h/.cpp  # 16x-averaged ADC + Steinhart-Hart
+    ├── fan.h/.cpp      # LEDC PWM, hysteresis, slew limiting, overheat alarm
+    └── display.h/.cpp  # I2C LCD status UI
+```
 
-- [ ] Implement `read_temperature_c()` for your sensor
-- [ ] Confirm pin map against your wiring
-- [ ] Tune thresholds/hysteresis for your thermal load
-- [ ] Add `docs/` photos of the build
+## Display
+
+- Line 0: `Temp: 45.2 C` (or `!! OVERHEAT !!`)
+- Line 1: `Fan:  65%`
+
+Serial telemetry at 115200 baud: `T=45.2C duty=166 alarm=0`.
+
+## Building
+
+```bash
+pip install platformio   # or: brew install platformio
+pio run -t upload        # builds, flashes, installs the LCD library
+pio device monitor       # serial telemetry
+```
+
+## Status
+
+- [x] Pin map and all tunables in `config.h`
+- [x] Thermistor sensing with Steinhart-Hart conversion
+- [x] Hysteresis + slew-limited PWM fan control, overheat alarm
+- [x] I2C LCD status display + serial telemetry
+- [ ] Verify thermistor divider topology and B-coefficient against your part
+- [ ] Tachometer feedback (closed-loop RPM control)
+- [ ] Tune setpoint/hysteresis against measured thermal response
 
 ## License
 
