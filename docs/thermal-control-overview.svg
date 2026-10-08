@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="440" viewBox="0 0 1050 440" role="img" aria-labelledby="t d">
+  <title id="t">Thermodule control loop</title><desc id="d">Thermistor sensing, ESP32 control, PWM fan, tachometer feedback, LCD and telemetry.</desc>
+  <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0 0L9 3L0 6Z" fill="#34d399"/></marker></defs><rect width="1050" height="440" rx="24" fill="#071c19"/>
+  <text x="48" y="65" fill="white" font-family="Segoe UI,Arial" font-size="32" font-weight="700">THERMODULE · FAIL-SAFE THERMAL CONTROL</text>
+  <g fill="#0d3029" stroke="#34d399" stroke-width="2"><rect x="55" y="155" width="170" height="110" rx="14"/><rect x="300" y="125" width="220" height="170" rx="14"/><rect x="595" y="155" width="170" height="110" rx="14"/><rect x="840" y="155" width="155" height="110" rx="14"/></g>
+  <g stroke="#34d399" stroke-width="6" marker-end="url(#a)"><line x1="225" y1="210" x2="292" y2="210"/><line x1="520" y1="210" x2="587" y2="210"/><line x1="765" y1="210" x2="832" y2="210"/></g>
+  <path d="M920 275 C920 355 410 360 410 305" fill="none" stroke="#fbbf24" stroke-width="5" marker-end="url(#a)"/>
+  <g fill="white" font-family="Segoe UI,Arial" font-size="20" text-anchor="middle"><text x="140" y="200">NTC</text><text x="140" y="228">thermistor</text><text x="410" y="185">ESP32</text><text x="410" y="215">hysteresis + ramp</text><text x="410" y="245">sensor fail-safe</text><text x="680" y="200">25 kHz PWM</text><text x="680" y="228">MOSFET + fan</text><text x="917" y="200">Tachometer</text><text x="917" y="228">RPM telemetry</text></g>
+  <text x="55" y="395" fill="#a7f3d0" font-family="Segoe UI,Arial" font-size="18">Invalid sensor → full cooling · LCD alarm · serial temperature, duty, RPM, and fault state</text>
+</svg>
