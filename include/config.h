@@ -8,7 +8,7 @@
 /* ---- Pins (ESP32 DevKit) ---- */
 #define PIN_THERMISTOR  34    // ADC1_CH6, input-only — safe for analog
 #define PIN_FAN_PWM     25    // LEDC PWM -> MOSFET gate (low-side fan drive)
-#define PIN_TACH        33    // TODO: fan tachometer input (not yet used)
+#define PIN_TACH        33    // open-collector fan tachometer input
 #define PIN_I2C_SDA     21
 #define PIN_I2C_SCL     22
 #define LCD_I2C_ADDR    0x27  // PCF8574 backpack; use 0x3F if yours differs
@@ -38,6 +38,8 @@
 #define FAN_PWM_RES_BITS   8
 #define FAN_MIN_DUTY       51      // ~20%: keeps the fan spinning once started
 #define FAN_SLEW_PER_TICK  25      // max duty change per 500 ms control tick
+#define FAN_TACH_PULSES_PER_REV 2  // typical 3/4-wire fan; verify datasheet
+#define FAN_TACH_SAMPLE_MS 1000
 
 /* ---- Timing ---- */
 #define CONTROL_PERIOD_MS  500
