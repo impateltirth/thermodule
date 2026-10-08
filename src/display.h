@@ -6,5 +6,5 @@
 class Display {
 public:
     void begin();
-    void show(float tempC, uint8_t duty, bool alarm);
+    void show(float tempC, uint8_t duty, bool alarm, bool sensorFault = false);
 };

@@ -1,5 +1,7 @@
 # Thermodule
 
+[![Build firmware](https://github.com/impateltirth/thermodule/actions/workflows/platformio.yml/badge.svg)](https://github.com/impateltirth/thermodule/actions/workflows/platformio.yml)
+
 Thermal management system on ESP32: NTC thermistor temperature sensing, automatic PWM fan control with hysteresis across configurable temperature ranges, and real-time monitoring on an I2C LCD.
 
 **Hardware:** ESP32 DevKit · 10k NTC thermistor · MOSFET-driven fan · 16x2 I2C LCD (PCF8574)
@@ -47,7 +49,12 @@ All tunables (pins, setpoint, hysteresis, PWM params, thermistor constants) live
 - Line 0: `Temp: 45.2 C` (or `!! OVERHEAT !!`)
 - Line 1: `Fan:  65%`
 
-Serial telemetry at 115200 baud: `T=45.2C duty=166 alarm=0`.
+Serial telemetry at 115200 baud:
+`T=45.2C duty=166 alarm=0 sensor_fault=0`.
+
+An invalid or rail-clamped thermistor reading is treated as a sensor fault: the
+fan moves toward full duty, the LCD reports `SENSOR FAULT`, and telemetry marks
+the fault explicitly.
 
 ## Building
 

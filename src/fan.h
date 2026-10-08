@@ -10,8 +10,10 @@ public:
     uint8_t update(float tempC);
     uint8_t duty() const { return duty_; }
     bool alarm() const { return alarm_; }  // true when temp >= TEMP_MAX_C
+    bool sensorFault() const { return sensor_fault_; }
 
 private:
     uint8_t duty_ = 0;
     bool alarm_ = false;
+    bool sensor_fault_ = false;
 };

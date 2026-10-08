@@ -33,8 +33,8 @@ void loop()
         last = now;
         float temp = sensor.readCelsius();
         uint8_t duty = fan.update(temp);
-        display.show(temp, duty, fan.alarm());
-        Serial.printf("T=%.1fC duty=%u alarm=%d\n",
-                      (double)temp, duty, fan.alarm());
+        display.show(temp, duty, fan.alarm(), fan.sensorFault());
+        Serial.printf("T=%.1fC duty=%u alarm=%d sensor_fault=%d\n",
+                      (double)temp, duty, fan.alarm(), fan.sensorFault());
     }
 }

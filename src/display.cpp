@@ -28,12 +28,14 @@ void Display::begin()
     printPadded("Booting...");
 }
 
-void Display::show(float tempC, uint8_t duty, bool alarm)
+void Display::show(float tempC, uint8_t duty, bool alarm, bool sensorFault)
 {
     char line[17];
 
     lcd.setCursor(0, 0);
-    if (alarm) {
+    if (sensorFault) {
+        printPadded("!! SENSOR FAULT");
+    } else if (alarm) {
         printPadded("!! OVERHEAT !!");
     } else {
         snprintf(line, sizeof(line), "Temp: %4.1f C", (double)tempC);

@@ -17,8 +17,10 @@ float TempSensor::readCelsius()
         delay(2);
     }
     float adc = raw / 16.0f;
-    if (adc < 1.0f)
-        adc = 1.0f;  // avoid divide-by-zero on a disconnected sensor
+    // Either rail indicates an open/shorted divider or unusable reading.
+    // NAN is handled as a fail-safe full-fan condition by Fan::update().
+    if (adc < 1.0f || adc > 4094.0f)
+        return NAN;
 
     float v = adc / 4095.0f * ADC_VREF;
     // Divider: 3V3 -- Rs --+-- Rt -- GND, ADC at +.
